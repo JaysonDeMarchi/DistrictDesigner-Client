@@ -9,8 +9,17 @@ $dark-grey: #939393;
 // Font
 $default-font: Bitter;
 
-.App {
-  text-align: center;
+//.App {
+  
+//}
+
+#map {
+  position:absolute;
+  background-color: #ffffff;
+  left:0px;
+  top:0px;
+  height:100vh;
+  width:100%;
 }
 
 .Header {
