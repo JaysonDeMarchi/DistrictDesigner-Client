@@ -2,8 +2,8 @@ import DisplayModal from './DisplayModal';
 import React, { Component } from 'react';
 import ToolModal from './ToolModal';
 import mapboxgl from 'mapbox-gl';
-//import 'mapbox-gl/dist/mapbox-gl.css';
 
+var map;
 
 class Map extends Component {
     render() {
@@ -31,6 +31,27 @@ class Map extends Component {
                 url: 'mapbox://longh.0mfgysin'
             });
             map.addLayer({
+                'id': 'stateFill',
+                'type': 'fill',
+                'source': 'stateSource',
+                'source-layer': 'usstates',
+                'layout': {},
+                'paint': {
+                    'fill-color': ["case",
+                        ["boolean", ["feature-state", "hover"], false],
+                        '#880000',
+                        '#000088'
+                    ],
+                    "fill-opacity": ["case",
+                        ["boolean", ["feature-state", "hover"], false],
+                        1.0,
+                        0.5
+                    ]
+                },
+                'minzoom': 3.5,
+                'maxzoom': 5.5
+            });
+            map.addLayer({
                 'id': 'stateBorders',
                 'type': 'line',
                 'source': 'stateSource',
@@ -43,14 +64,18 @@ class Map extends Component {
                 'minzoom': 3.5,
                 'maxzoom': 5.5
             });
+            var hoveredStateId = null;
+            map.on('mousemove', function (e) {
+                var features = map.queryRenderedFeatures(e.point, { layers: ['stateFill'] });
+                if (hoveredStateId != null) map.setFeatureState({ source: 'stateSource', sourceLayer: 'usstates', id: hoveredStateId }, { hover: false });
+                if(features[0] != null)hoveredStateId = features[0].id;
+                map.setFeatureState({ source: 'stateSource', sourceLayer: 'usstates', id: hoveredStateId }, { hover: true });
+            });
         });
     }
 }
 
 export default Map;
-
-//
-var map;
 
 /*function fly() {
     map.flyTo({center: [-89.36, 44.87], zoom: 6});
@@ -59,7 +84,3 @@ var map;
 function resetZoom() {
     map.flyTo({center: [-95.7, 39], zoom: 3.75});
 }*/
-
-
-//loadMap();
-//
