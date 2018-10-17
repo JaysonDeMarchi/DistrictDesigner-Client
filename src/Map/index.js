@@ -30,6 +30,44 @@ class Map extends Component {
                 type: 'vector',
                 url: 'mapbox://longh.0mfgysin'
             });
+            map.addSource('wiscSource', {
+                type: 'vector',
+                url: 'mapbox://longh.6h9vyqkw'
+            });
+            map.addLayer({
+                'id': 'wiscFill',
+                'type': 'fill',
+                'source': 'wiscSource',
+                'source-layer': 'wisc',
+                'layout': {},
+                'paint': {
+                    'fill-color': ["case",
+                        ["boolean", ["feature-state", "hover"], false],
+                        '#880000',
+                        '#000088'
+                    ],
+                    "fill-opacity": ["case",
+                        ["boolean", ["feature-state", "hover"], false],
+                        1.0,
+                        0.5
+                    ]
+                },
+                'minzoom': 5.5,
+                'maxzoom': 10
+            });
+            map.addLayer({
+                'id': 'wiscBorders',
+                'type': 'line',
+                'source': 'wiscSource',
+                'source-layer': 'wisc',
+                'layout': {},
+                'paint': {
+                    'line-color': '#ffffff',
+                    'line-width': 0.5
+                },
+                'minzoom': 5.5,
+                'maxzoom': 10
+            });
             map.addLayer({
                 'id': 'stateFill',
                 'type': 'fill',
@@ -68,8 +106,16 @@ class Map extends Component {
             map.on('mousemove', function (e) {
                 var features = map.queryRenderedFeatures(e.point, { layers: ['stateFill'] });
                 if (hoveredStateId != null) map.setFeatureState({ source: 'stateSource', sourceLayer: 'usstates', id: hoveredStateId }, { hover: false });
-                if(features[0] != null)hoveredStateId = features[0].id;
+                hoveredStateId = (features[0] != null)?features[0].id:null;
                 map.setFeatureState({ source: 'stateSource', sourceLayer: 'usstates', id: hoveredStateId }, { hover: true });
+            });
+            map.on('mousedown', function(e){
+                if (hoveredStateId != null){
+                    
+                    fly();
+                }else{
+                    resetZoom();
+                }
             });
         });
     }
@@ -77,10 +123,10 @@ class Map extends Component {
 
 export default Map;
 
-/*function fly() {
+function fly() {
     map.flyTo({center: [-89.36, 44.87], zoom: 6});
 }
 
 function resetZoom() {
     map.flyTo({center: [-95.7, 39], zoom: 3.75});
-}*/
+}
