@@ -1,8 +1,16 @@
 import { URL, HTTP_STATE, HTTP_STATUS } from '../config/constants';
 
 export const getUpdate = () => {
-  console.log('Update received.')
-  return true;
+  const request = new XMLHttpRequest();
+  request.onreadystatechange = () => {
+    if (request.readyState === HTTP_STATE.DONE && request.status === HTTP_STATUS.OK) {
+      return JSON.parse(request.response);
+    }
+  }
+
+  request.open("GET", URL + "/UpdatePrecincts", false);
+  request.send();
+  return request.onreadystatechange();
 }
 
 export const startAlgorithm = (algoType, shortName, weights) => {
