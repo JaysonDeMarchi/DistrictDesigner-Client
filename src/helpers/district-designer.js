@@ -25,15 +25,26 @@ export const startAlgorithm = (algoType, shortName, weights) => {
       return JSON.parse(request.response);
     }
   }
-
   request.open("POST", URL + "/StartAlgorithm", false);
-  request.send(body);
+  try{
+    request.send(body);
+  } catch (e) {
+    return false;
+  }
   return request.onreadystatechange();
 }
 
 export const stopAlgorithm = () => {
-  console.log("Algorithm Stopped");
-  return true;
+  const request = new XMLHttpRequest();
+  request.onreadystatechange = () => {
+    if (request.readyState === HTTP_STATE.DONE && request.status === HTTP_STATUS.OK) {
+      return JSON.parse(request.response);
+    }
+  }
+
+  request.open("GET", URL + "/StopAlgorithm", false);
+  request.send();
+  return request.onreadystatechange();
 }
 
 export const toggleAlgorithm = (status) => {
