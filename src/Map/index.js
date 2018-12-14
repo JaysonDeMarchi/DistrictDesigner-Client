@@ -1,7 +1,7 @@
 import DisplayModal from './DisplayModal';
 import React, { Component } from 'react';
 import ToolModal from './ToolModal';
-import { startAlgorithm, toggleAlgorithm, stopAlgorithm } from '../helpers/district-designer';
+import { startAlgorithm, getUpdate, toggleAlgorithm, stopAlgorithm } from '../helpers/district-designer';
 import { createMap, loadState, unloadState } from '../helpers/mapGeneration';
 
 let map;
@@ -41,6 +41,7 @@ class Map extends Component {
     weights.map((w) => (weightMap[w.id] = w.value));
     const result = startAlgorithm(algorithm, this.state.selectedState, weightMap);
     this.appendText((result)?"Algorithm Started: Weights: " + weights.map((w) => w.id + ": " + w.value) + " State: " + this.state.selectedState + " Algorithm Type: " + algorithm:"ERROR");
+    getUpdate();
     return result;
   }
 
