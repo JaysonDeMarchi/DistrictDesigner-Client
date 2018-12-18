@@ -156,20 +156,27 @@ class Map extends Component {
     if(popup_precinct !== undefined) { popup_precinct.remove(); }
     this.setState({ showingDistricts: !show});
     this.enableHover(map, this.state.selectedState.shortName, !this.state.showingDistricts);
-    map.setPaintProperty(this.state.selectedState.shortName+'Borders', 'line-opacity', (!show)?1.0:0.0);
-    map.setPaintProperty(this.state.selectedState.shortName+'Fill', 'fill-opacity', (!show)?1.0:0.0);
+    map.setPaintProperty(this.state.selectedState.shortName+'Borders', 'line-opacity', (!show)?1.0:1.0);
+    map.setPaintProperty(this.state.selectedState.shortName+'Fill', 'fill-opacity', (!show)?1.0:1.0);
     map.setPaintProperty('districtBorders', 'line-opacity', (!show)?0.0:1.0)
     map.setPaintProperty('districtFill', 'fill-opacity', (!show)?0.0:1.0)
   }
 
   onPrecinctHover = (e) => {
     var features = map.queryRenderedFeatures(e.point, { layers: [this.state.selectedState.shortName+'Fill'] });
-    
     this.setState({hoveredPrecinctId: (features[0] != null)?features[0].id:null});
     if(popup_precinct !== undefined) { popup_precinct.remove(); }
     if(this.state.hoveredPrecinctId !== null && this.state.displayPane === MODAL.INFO_MODAL && this.state.showingDistricts) {
       let textOut = '';
-      Object.keys(features[0].properties).map((key)=>(textOut += key+': '+features[0].properties[key] + '<br/>'));
+      Object.keys(features[0].properties).map((key)=>{
+        if(key !== 'ELECTION_RESULTS') {
+          (textOut += key+': '+features[0].properties[key] + '<br/>')
+        }/* else if (key === 'ELECTION_RESULTS') {
+          (textOut += key+':<br/>')
+          if(features[0].properties.ELECTION_RESULTS !== undefined) Object.keys(features[0].properties.ELECTION_RESULTS).map((e)=>(textOut += e+': '+e.value+', '));
+        }*/
+      });
+      console.log(textOut);
       popup_precinct = new mapboxgl.Popup({closeButton: false, closeOnClick: false})
       .setLngLat(e.lngLat)
       .setHTML('<p>'+textOut+'</p>')
@@ -212,6 +219,7 @@ class Map extends Component {
           onToggle={this.onToggleAlgorithm}
           onStop={this.onStop}
           updateSettings={this.updateSettings}
+          user={this.props.user}
           />:<div/>
         }
         {
