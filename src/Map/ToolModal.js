@@ -20,11 +20,12 @@ class ToolModal extends Component {
       parameters: {},
       options: [],
       weightOptionsList: [],
+      weightsToSend: [],
     };
   }
 
   componentDidMount() {
-    this.props.weights.map((item) => (this.updateWeight(item.id, (this.props.sliderMax/2).toFixed(2))));
+    this.props.weights.map((item) => (this.initWeight(item.id, (this.props.sliderMax/2).toFixed(2))));
   }
 
   toggleConstitutionView = () => {
@@ -38,7 +39,7 @@ class ToolModal extends Component {
   }
 
   onStart = () => {
-    return this.props.onStart(this.state.weights, this.state.algorithm)
+    return this.props.onStart(this.state.weightsToSend, this.state.algorithm, this.state.parameters);
   }
   
   onStop = () => {
@@ -53,17 +54,45 @@ class ToolModal extends Component {
     this.setState({ parameters: parameters });
   }
 
+  initWeight = (sliderId, newWeight) => {
+    let newWeightsToSend = [];
+    this.props.weights.map(element => {
+      newWeightsToSend.push({
+        id: element.startId,
+        value: (newWeight / this.props.sliderMax).toFixed(2),
+      });
+    });
+    this.setState({ weightsToSend: newWeightsToSend });
+  }
+
   updateWeight = (sliderId, newWeight) => {
-    this.setState({ weights: this.state.weights.map(element => {
+    let newWeights = [];
+    let newWeightsToSend = [];
+    this.state.weights.map(element => {
       if (element.id === sliderId) {
-        return {
-          label: element.label,
+        newWeights.push({
           id: element.id,
+          startId: element.startId,
           value: (newWeight / this.props.sliderMax).toFixed(2),
-        }
+        });
+        newWeightsToSend.push({
+          id: element.startId,
+          value: (newWeight / this.props.sliderMax).toFixed(2),
+        });
+      } else {
+        newWeights.push({
+          id: element.id,
+          startId: element.startId,
+          value: element.value,
+        });
+        newWeightsToSend.push({
+          id: element.startId,
+          value: element.value,
+        });
       }
-      return element;
-    })});
+    });
+    this.setState({ weights: newWeights });
+    this.setState({ weightsToSend: newWeightsToSend });
   }
 
   zoomOut = () => {
@@ -279,17 +308,20 @@ ToolModal.defaultProps = {
   weights: [
     {
       label: 'Compactness',
-      id: COMPACTNESS,
+      id: 'compactness',
+      startId: 'COMPACTNESS',
       value: 0.50,
     },
     {
       label: 'Partisan Gerrymandering',
-      id: PARTISAN_GERRYMANDERING,
+      id: 'partisan_Gerrymandering',
+      startId: 'PARTISAN_GERRYMANDERING',
       value: 0.50,
     },
     {
       label: 'Population Equality',
-      id: POPULATION_EQUALITY,
+      id: 'population_Equality',
+      startId: 'POPULATION_EQUALITY',
       value: 0.50,
     },
   ],
