@@ -39,7 +39,7 @@
     "react": "^16.5.2",
     "react-alert": "^4.0.4",
     "react-alert-template-basic": "^1.0.0",
-    "react-dev-utils": "^5.0.2",
+    "react-dev-utils": "^11.0.4",
     "react-dom": "^16.5.2",
     "react-modal": "^3.6.1",
     "react-s-alert": "^1.4.1",
